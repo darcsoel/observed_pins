@@ -1,24 +1,21 @@
 from config import BLOCK_SIZE, I_UP_LIMIT, NUMBERS_SCHEMA, I_DOWN_LIMIT, Y_UP_LIMIT, Y_DOWN_LIMIT
 
+NUMBERS = []
+
+for block in NUMBERS_SCHEMA:
+    NUMBERS.extend(block)
+
 
 def find_number_index(number):
-    """Return i,y coordinates of number, based on phone-numbers matrix"""
-
-    try:
-        number = int(number)
-    except TypeError:
-        return None, None
-
-    i = (number % BLOCK_SIZE) - 1
-    y = number // BLOCK_SIZE
-
-    return i, y
+    i = NUMBERS.index(number) % BLOCK_SIZE
+    y = NUMBERS.index(number) // BLOCK_SIZE
+    return y, i
 
 
 def find_variations(number):
     """Return neighborhoods of number, if exists"""
 
-    i_coordinate, y_coordinate = find_number_index(number)
+    y_coordinate, i_coordinate = find_number_index(number)
 
     if i_coordinate is None:
         return []
@@ -49,9 +46,21 @@ def find_variations(number):
 def get_pins(observed):
     """Return all combinations"""
 
-    result = []
+    variations, result = [], []
 
     for number in observed:
-        pass
+        variations.append(find_variations(number))
 
-    return result
+    result.extend(variations.pop())
+
+    while variations:
+        numbers = variations.pop()
+        final = []
+
+        for char in result:
+            for number in numbers:
+                final.append(f"{number}{char}")
+
+        result = final
+
+    return set(result)
